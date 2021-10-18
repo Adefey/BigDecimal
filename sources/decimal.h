@@ -1,4 +1,6 @@
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <vector>
 #pragma once
@@ -13,6 +15,7 @@ private:
     Decimal Inverse() const;
     int maxPrecision = 1000;
     bool IsZero() const;
+    void MakeFromString(const std::string &s);
 public:
     Decimal();
     Decimal(std::string str);
@@ -39,8 +42,8 @@ public:
     bool operator>(const Decimal &decimal) const;
     bool operator>=(const Decimal &decimal) const;
 
-    Decimal& operator[](const int index);
-    Decimal& operator()(const int index);
+    const int operator[](const int index);
+    int& operator()(const int index);
 
     friend std::ostream& operator<<(std::ostream &out, const Decimal &decimal);
     friend std::istream& operator>>(std::istream &in, Decimal &decimal);

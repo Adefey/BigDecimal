@@ -9,26 +9,8 @@ Decimal::Decimal()
 
 Decimal::Decimal(std::string str)
 {
-    size_t index;
-    if (str[0]=='-')
-    {
-        sign = -1;
-        index = 1;
-    }
-    else
-    {
-        sign = 1;
-        index = 0;
-    }
-    exponent = str.length() - index;
-    while (index<str.length())
-    {
-        if (str[index] == '.')
-            exponent = sign == 1 ? index : index - 1;
-        else
-            digits.push_back(str[index] - '0');
-        index++;
-    }
+    MakeFromString(str);
+    RemoveZeroes();
 }
 
 Decimal::Decimal(const Decimal &decimal)
@@ -40,24 +22,47 @@ Decimal::Decimal(const Decimal &decimal)
 
 Decimal::Decimal(const int &num)
 {
-    sign = num >= 0 ? 1 : -1;
-    int buf = num;
-    for (int i = 1; num; i*=10)
-    {
-        exponent+=1;
-        digits.push_back(buf % i);
-        buf=num/i;
-    }
+    std::stringstream ss;
+	ss << num;
+	MakeFromString(ss.str());
+	RemoveZeroes();
 }
 
 Decimal::Decimal(const double &num)
 {
-
+    std::stringstream ss;
+	ss << std::setprecision(15) << num;
+	MakeFromString(ss.str());
+	RemoveZeroes();
 }
 
 Decimal::~Decimal()
 {
 
+}
+
+void Decimal::MakeFromString(const std::string &s)
+{
+    size_t index;
+
+	if (s[0] == '-') {
+		sign = -1;
+		index = 1;
+	} else {
+		sign = 1;
+		index = 0;
+	}
+
+	exponent = s.length() - index;
+
+	while (index < s.length()) {
+		if (s[index] == '.')
+			exponent = sign == 1 ? index : index - 1;
+		else
+			digits.push_back(s[index] - '0');
+
+		index++;
+	}
 }
 
 void Decimal::RemoveZeroes()
@@ -286,40 +291,6 @@ Decimal Decimal::operator/=(const Decimal &decimal)
     return (*this = *this / decimal);
 }
 
-std::ostream& operator<<(std::ostream &out, const Decimal &decimal)
-{
-    if (decimal.sign == -1)
-        out << '-';
-    if (decimal.exponent > 0)
-    {
-        size_t i = 0;
-        size_t e = decimal.exponent;
-        while(i < decimal.digits.size() && i < e)
-            out << decimal.digits[i++];
-        while (i < e)
-        {
-            out << "0";
-            i++;
-        }
-
-        if (i < decimal.digits.size())
-        {
-            out << ".";
-            while(i < decimal.digits.size())
-                out << decimal.digits[i++];
-        }
-    }
-    else
-    {
-        out << "0.";
-        for (long i = 0; i < - decimal.exponent; i++)
-            out << "0";
-        for (size_t i = 0; i < decimal.digits.size(); i++)
-            out << decimal.digits[i];
-    }
-    return out;
-}
-
 bool Decimal::operator==(const Decimal &decimal) const
 {
     if (sign != decimal.sign)
@@ -383,6 +354,51 @@ bool Decimal::operator>=(const Decimal &decimal) const
     return *this > decimal || *this == decimal;
 }
 
+
+const int Decimal::operator[](const int index)
+{
+    return digits[index];
+}
+
+int& Decimal::operator()(const int index)
+{
+    return digits[index];
+}
+
+std::ostream& operator<<(std::ostream &out, const Decimal &decimal)
+{
+    if (decimal.sign == -1)
+        out << '-';
+    if (decimal.exponent > 0)
+    {
+        size_t i = 0;
+        size_t e = decimal.exponent;
+        while(i < decimal.digits.size() && i < e)
+            out << decimal.digits[i++];
+        while (i < e)
+        {
+            out << "0";
+            i++;
+        }
+
+        if (i < decimal.digits.size())
+        {
+            out << ".";
+            while(i < decimal.digits.size())
+                out << decimal.digits[i++];
+        }
+    }
+    else
+    {
+        out << "0.";
+        for (long i = 0; i < - decimal.exponent; i++)
+            out << "0";
+        for (size_t i = 0; i < decimal.digits.size(); i++)
+            out << decimal.digits[i];
+    }
+    return out;
+}
+
 std::istream& operator>>(std::istream &in, Decimal &decimal)
 {
     std::string str;
@@ -390,3 +406,23 @@ std::istream& operator>>(std::istream &in, Decimal &decimal)
     decimal = Decimal(str);
     return in;
 }
+
+int Decimal::ToInt()
+{
+    std::stringstream ss;
+    ss << *this;
+    int res;
+    ss>>res;
+    return res;
+}
+
+
+double Decimal::ToDouble()
+{
+    std::stringstream ss;
+    ss << *this;
+    double res;
+    ss>>res;
+    return res;
+}
+
