@@ -1,26 +1,23 @@
 #include "decimal.h"
 
-Decimal::Decimal()
+Decimal::Decimal() : sign{1}, digits{0}, exponent{1}
 {
-    sign = 1;
-    digits = std::vector<int>(1, 0);
-    exponent = 1;
 }
 
-Decimal::Decimal(std::string str)
+Decimal::Decimal(std::string str) : sign{1}, digits{0}, exponent{1}
 {
     MakeFromString(str);
     RemoveZeroes();
 }
 
-Decimal::Decimal(const Decimal &decimal)
+Decimal::Decimal(const Decimal &decimal) : sign{1}, digits{0}, exponent{1}
 {
     sign = decimal.sign;
     exponent = decimal.exponent;
     digits = std::vector<int>(decimal.digits);
 }
 
-Decimal::Decimal(const int &num)
+Decimal::Decimal(const int &num) : sign{1}, digits{0}, exponent{1}
 {
     std::stringstream ss;
 	ss << num;
@@ -28,7 +25,7 @@ Decimal::Decimal(const int &num)
 	RemoveZeroes();
 }
 
-Decimal::Decimal(const double &num)
+Decimal::Decimal(const double &num) : sign{1}, digits{0}, exponent{1}
 {
     std::stringstream ss;
 	ss << std::setprecision(15) << num;
@@ -53,7 +50,7 @@ void Decimal::MakeFromString(const std::string &s)
 		index = 0;
 	}
 
-	exponent = s.length() - index;
+	exponent = s.length() - index ;
 
 	while (index < s.length()) {
 		if (s[index] == '.')
@@ -67,7 +64,7 @@ void Decimal::MakeFromString(const std::string &s)
 
 void Decimal::RemoveZeroes()
 {
-    size_t n = std::max((long) 1, exponent);
+    size_t n = std::max(static_cast<long>(1), exponent);
     while (digits.size() > n && digits[digits.size() - 1] == 0)
         digits.erase(digits.end() - 1);
     while (digits.size() > 1 && digits[0] == 0) {
@@ -103,7 +100,7 @@ Decimal Decimal::Inverse() const
 
 	res.exponent -= d.exponent - 1;
 	size_t numbers = 0;
-	size_t intPart = std::max((long) 0, res.exponent);
+	size_t intPart = std::max(static_cast<long>(0), res.exponent);
 	size_t maxNumbers = maxPrecision + intPart;
 	do {
 		int div = 0;
@@ -123,7 +120,7 @@ bool Decimal::IsZero() const {
 	return digits.size() == 1 && digits[0] == 0;
 }
 
-Decimal Decimal::operator=(const Decimal &decimal)
+Decimal& Decimal::operator=(const Decimal &decimal)
 {
     sign = decimal.sign;
     exponent = decimal.exponent;
@@ -266,11 +263,11 @@ Decimal Decimal::operator*=(const Decimal &decimal)
 Decimal Decimal::operator/(const Decimal &decimal) const
 {
     Decimal res = *this * decimal.Inverse();
-    size_t intPart = std::max((long)0, exponent);
+    size_t intPart = std::max(static_cast<long>(0), exponent);
 	if (intPart > res.digits.size() - 1)
 		return res;
 	size_t i = res.digits.size() - 1 - intPart;
-	size_t n = std::max((long) 0, res.exponent);
+	size_t n = std::max(static_cast<long>(0), res.exponent);
 	if (i > n && res.digits[i] == 9) {
 		while (i > n && res.digits[i] == 9)
 			i--;
@@ -355,7 +352,7 @@ bool Decimal::operator>=(const Decimal &decimal) const
 }
 
 
-const int Decimal::operator[](const int index)
+int Decimal::operator[](const int index)
 {
     return digits[index];
 }

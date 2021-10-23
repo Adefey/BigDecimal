@@ -1,7 +1,7 @@
 #include "decimal.h"
 #include <iostream>
 
-int main(int argc, char** argv)
+int main()
 {
     //Decimal o1(125), o2(2.0);
     Decimal o1, o2;

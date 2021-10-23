@@ -23,7 +23,7 @@ public:
     Decimal(const int &num);
     Decimal(const double &num);
     ~Decimal();
-    Decimal operator=(const Decimal &decimal);
+    Decimal& operator=(const Decimal &decimal);
 
     Decimal operator-() const;
     Decimal operator+(const Decimal &decimal) const;
@@ -42,7 +42,7 @@ public:
     bool operator>(const Decimal &decimal) const;
     bool operator>=(const Decimal &decimal) const;
 
-    const int operator[](const int index);
+    int operator[](const int index);
     int& operator()(const int index);
 
     friend std::ostream& operator<<(std::ostream &out, const Decimal &decimal);
