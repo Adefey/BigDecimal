@@ -1,5 +1,5 @@
 Compiler=g++
-Flags=-O3 -std=c++2a
+Flags=-O3 -std=c++2a -Werror=sign-conversion -Werror=conversion -Werror=sign-compare
 Product=Executable
 Sources=sources/
 Binaries=binaries/

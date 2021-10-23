@@ -40,7 +40,7 @@ Decimal::~Decimal()
 
 void Decimal::MakeFromString(const std::string &s)
 {
-    size_t index;
+    int index;
 
 	if (s[0] == '-') {
 		sign = -1;
@@ -50,13 +50,13 @@ void Decimal::MakeFromString(const std::string &s)
 		index = 0;
 	}
 
-	exponent = s.length() - index ;
+	exponent = std::abs(static_cast<int>(s.length()) - index);
 
-	while (index < s.length()) {
-		if (s[index] == '.')
+	while (index < static_cast<int>(s.length())) {
+		if (s[static_cast<long unsigned int>(index)] == '.')
 			exponent = sign == 1 ? index : index - 1;
 		else
-			digits.push_back(s[index] - '0');
+			digits.push_back(s[static_cast<long unsigned int>(index)] - '0');
 
 		index++;
 	}
@@ -64,8 +64,8 @@ void Decimal::MakeFromString(const std::string &s)
 
 void Decimal::RemoveZeroes()
 {
-    size_t n = std::max(static_cast<long>(1), exponent);
-    while (digits.size() > n && digits[digits.size() - 1] == 0)
+    int n = std::max(1, static_cast<int>(exponent));
+    while (static_cast<int>(digits.size()) > n && digits[digits.size() - 1] == 0)
         digits.erase(digits.end() - 1);
     while (digits.size() > 1 && digits[0] == 0) {
         digits.erase(digits.begin());
@@ -99,9 +99,9 @@ Decimal Decimal::Inverse() const
 		d.exponent++;
 
 	res.exponent -= d.exponent - 1;
-	size_t numbers = 0;
-	size_t intPart = std::max(static_cast<long>(0), res.exponent);
-	size_t maxNumbers = maxPrecision + intPart;
+	int numbers = 0;
+	int intPart = std::max(0, static_cast<int>(res.exponent));
+	int maxNumbers = maxPrecision + intPart;
 	do {
 		int div = 0;
 		while (d >= x) {
@@ -263,21 +263,21 @@ Decimal Decimal::operator*=(const Decimal &decimal)
 Decimal Decimal::operator/(const Decimal &decimal) const
 {
     Decimal res = *this * decimal.Inverse();
-    size_t intPart = std::max(static_cast<long>(0), exponent);
-	if (intPart > res.digits.size() - 1)
+    int intPart = std::max(0, static_cast<int>(exponent));
+	if (intPart > static_cast<int>(res.digits.size()) - 1)
 		return res;
-	size_t i = res.digits.size() - 1 - intPart;
-	size_t n = std::max(static_cast<long>(0), res.exponent);
-	if (i > n && res.digits[i] == 9) {
-		while (i > n && res.digits[i] == 9)
+	int i = static_cast<int>(res.digits.size()) - 1 - intPart;
+	int n = std::max(0, static_cast<int>(res.exponent));
+	if (i > n && res.digits[static_cast<long unsigned int>(i)] == 9) {
+		while (i > n && res.digits[static_cast<long unsigned int>(i)] == 9)
 			i--;
-		if (res.digits[i] == 9) {
+		if (res.digits[static_cast<long unsigned int>(i)] == 9) {
 			res.digits.erase(res.digits.begin() + n, res.digits.end());
 			res = res + res.sign;
 		}
 		else {
 			res.digits.erase(res.digits.begin() + i + 1, res.digits.end());
-			res.digits[i]++;
+			res.digits[static_cast<long unsigned int>(i)]++;
 		}
 	}
 	return res;
@@ -354,12 +354,12 @@ bool Decimal::operator>=(const Decimal &decimal) const
 
 int Decimal::operator[](const int index)
 {
-    return digits[index];
+    return digits[static_cast<long unsigned int>(index)];
 }
 
 int& Decimal::operator()(const int index)
 {
-    return digits[index];
+    return digits[static_cast<long unsigned int>(index)];
 }
 
 std::ostream& operator<<(std::ostream &out, const Decimal &decimal)
@@ -368,21 +368,21 @@ std::ostream& operator<<(std::ostream &out, const Decimal &decimal)
         out << '-';
     if (decimal.exponent > 0)
     {
-        size_t i = 0;
-        size_t e = decimal.exponent;
-        while(i < decimal.digits.size() && i < e)
-            out << decimal.digits[i++];
+        int i = 0;
+        int e = static_cast<int>(decimal.exponent);
+        while(i < static_cast<int>(decimal.digits.size()) && i < e)
+            out << decimal.digits[static_cast<long unsigned int>(i++)];
         while (i < e)
         {
             out << "0";
             i++;
         }
 
-        if (i < decimal.digits.size())
+        if (i < static_cast<int>(decimal.digits.size()))
         {
             out << ".";
-            while(i < decimal.digits.size())
-                out << decimal.digits[i++];
+            while(i < static_cast<int>(decimal.digits.size()))
+                out << decimal.digits[static_cast<long unsigned int>(i++)];
         }
     }
     else

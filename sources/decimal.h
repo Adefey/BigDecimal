@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cmath>
 #pragma once
 
 class Decimal
